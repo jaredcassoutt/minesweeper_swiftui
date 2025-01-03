@@ -10,10 +10,7 @@ import SwiftUI
 struct CellView: View {
     let cell: MinesweeperCell
     
-    /// Called when the user taps (left-click) on the cell
     let onTap: () -> Void
-    
-    /// Called when the user long-presses (right-click / flag) the cell
     let onLongPress: () -> Void
     
     var body: some View {
