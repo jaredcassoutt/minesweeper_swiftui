@@ -1,5 +1,5 @@
 //
-//  MinesweeperViewModel.swift
+//  GameViewModel.swift
 //  Minesweeper
 //
 //  Created by Jared Cassoutt on 1/1/25.
@@ -8,12 +8,16 @@
 import SwiftUI
 import Combine
 
-class MinesweeperViewModel: ObservableObject {
+class GameViewModel: ObservableObject {
     @Published var grid: [[MinesweeperCell]] = []
     @Published var isGameOver: Bool = false
     @Published var isVictory: Bool = false
     
-    private(set) var currentDifficulty: MinesweeperDifficulty
+    private var flaggedNonMineCount = 0
+    private var revealedCount = 0
+    private var flaggedMineCount = 0
+    
+    private(set) var currentDifficulty: Difficulty
     
     @Published var isFlagMode: Bool = false
     
@@ -28,14 +32,14 @@ class MinesweeperViewModel: ObservableObject {
     var columns: Int
     var totalMines: Int
     
-    init(difficulty: MinesweeperDifficulty) {
+    init(difficulty: Difficulty) {
         self.currentDifficulty = difficulty
         self.rows = difficulty.gridSize.rows
         self.columns = difficulty.gridSize.columns
         self.totalMines = difficulty.gridSize.mines
     }
     
-    func newGame(difficulty: MinesweeperDifficulty) {
+    func newGame(difficulty: Difficulty) {
         // Stop any existing timer
         stopTimer()
         
@@ -58,6 +62,8 @@ class MinesweeperViewModel: ObservableObject {
         
         isGameOver = false
         isVictory = false
+        revealedCount = 0
+        flaggedMineCount = 0
         
         // Start timer
         startTimer()
@@ -104,67 +110,86 @@ class MinesweeperViewModel: ObservableObject {
     
     // MARK: - Game Logic
     
-    /// Adjust reveal logic: if in flag mode, place a flag instead of revealing.
+    // Adjust reveal logic
     func revealCell(row: Int, col: Int) {
-        guard !isGameOver else { return }
-        guard isValid(row, col) else { return }
+        guard !isGameOver, isValid(row, col) else { return }
+        let cell = grid[row][col]
         
         // If in flag mode, place a flag instead of revealing
         if isFlagMode {
             toggleFlag(row: row, col: col)
             return
-        } else {
-            // If flagged already, ignore
-            if grid[row][col].isFlagged { return }
         }
         
-        // Normal reveal logic below
-        grid[row][col].isRevealed = true
+        // If it's flagged or revealed, ignore
+        if cell.isFlagged || cell.isRevealed {
+            return
+        }
         
-        if grid[row][col].isMine {
+        // Reveal
+        cell.isRevealed = true
+        
+        // If it's a mine, game over
+        if cell.isMine {
             isGameOver = true
             isVictory = false
             stopTimer()
             revealAllMines()
             return
+        } else {
+            revealedCount += 1
         }
         
-        if grid[row][col].adjacentMines == 0 {
+        // Flood fill if 0 adjacent mines
+        if cell.adjacentMines == 0 {
             revealNeighbors(row: row, col: col)
         }
         
+        // Check victory
         checkVictory()
     }
     
+    // Adjust toggleFlag
     func toggleFlag(row: Int, col: Int) {
-        guard !isGameOver else { return }
-        guard isValid(row, col) else { return }
-        guard !grid[row][col].isRevealed else { return }
+        guard !isGameOver, isValid(row, col), !grid[row][col].isRevealed else { return }
         
-        grid[row][col].isFlagged.toggle()
+        let cell = grid[row][col]
         
-        checkVictory()
-    }
-    
-    private func checkVictory() {
-        var revealedCount = 0
-        var correctFlags = 0
-        
-        for row in 0..<rows {
-            for col in 0..<columns {
-                let cell = grid[row][col]
-                if cell.isRevealed && !cell.isMine {
-                    revealedCount += 1
-                }
-                if cell.isFlagged && cell.isMine {
-                    correctFlags += 1
-                }
+        // If we're turning on the flag
+        if !cell.isFlagged {
+            // Placing a flag
+            grid[row][col].isFlagged = true
+            if cell.isMine {
+                flaggedMineCount += 1
+            } else {
+                flaggedNonMineCount += 1
+            }
+        } else {
+            // Removing a flag
+            grid[row][col].isFlagged = false
+            if cell.isMine {
+                flaggedMineCount -= 1
+            } else {
+                flaggedNonMineCount -= 1
             }
         }
         
+        checkVictory()
+    }
+    
+    // Now check victory using counters
+    private func checkVictory() {
         let totalNonMines = rows * columns - totalMines
         
-        if revealedCount == totalNonMines || correctFlags == totalMines {
+        // #1) If all safe cells are revealed, you win
+        if revealedCount == totalNonMines {
+            isGameOver = true
+            isVictory = true
+            stopTimer()
+            revealAllMines()
+        }
+        // #2) Or if all mines are flagged AND no safe cells are flagged
+        else if flaggedMineCount == totalMines && flaggedNonMineCount == 0 {
             isGameOver = true
             isVictory = true
             stopTimer()

@@ -1,12 +1,5 @@
 //
-//  MinesweeperCellView.swift
-//  Minesweeper
-//
-//  Created by Jared Cassoutt on 1/1/25.
-//
-
-//
-//  MinesweeperCellView.swift
+//  CellView.swift
 //  Minesweeper
 //
 //  Created by Jared Cassoutt on 1/1/25.
@@ -14,7 +7,7 @@
 
 import SwiftUI
 
-struct MinesweeperCellView: View {
+struct CellView: View {
     let cell: MinesweeperCell
     
     /// Called when the user taps (left-click) on the cell

@@ -1,5 +1,5 @@
 //
-//  MinesweeperHomeView.swift
+//  HomeView.swift
 //  Minesweeper
 //
 //  Created by Jared Cassoutt on 1/1/25.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MinesweeperHomeView: View {
+struct HomeView: View {
     @StateObject var gameCenterHelper = GameCenterHelper.shared
     @State private var leaderboardID = ""
     @State private var showLeaderboard = false
@@ -50,9 +50,9 @@ struct MinesweeperHomeView: View {
                         .padding()
                     
                     // Difficulty options
-                    ForEach(MinesweeperDifficulty.allCases, id: \.self) { difficulty in
+                    ForEach(Difficulty.allCases, id: \.self) { difficulty in
                         NavigationLink {
-                            MinesweeperGameView(difficulty: difficulty)
+                            GameView(difficulty: difficulty)
                         } label: {
                             Text(difficulty.rawValue)
                                 .font(.title3)

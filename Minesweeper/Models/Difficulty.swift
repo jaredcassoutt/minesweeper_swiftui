@@ -1,5 +1,5 @@
 //
-//  MinesweeperDifficulty.swift
+//  Difficulty.swift
 //  Minesweeper
 //
 //  Created by Jared Cassoutt on 1/1/25.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum MinesweeperDifficulty: String, CaseIterable {
+enum Difficulty: String, CaseIterable {
     case easy = "Easy"
     case medium = "Medium"
     case hard = "Hard"
@@ -19,7 +19,7 @@ enum MinesweeperDifficulty: String, CaseIterable {
         case .medium:
             return (rows: 16, columns: 16, mines: 40)
         case .hard:
-            return (rows: 30, columns: 16, mines: 50)
+            return (rows: 25, columns: 16, mines: 50)
         }
     }
 }

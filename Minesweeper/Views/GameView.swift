@@ -1,5 +1,5 @@
 //
-//  MinesweeperGameView.swift
+//  GameView.swift
 //  Minesweeper
 //
 //  Created by Jared Cassoutt on 1/1/25.
@@ -7,18 +7,18 @@
 
 import SwiftUI
 
-struct MinesweeperGameView: View {
+struct GameView: View {
     @Environment(\.dismiss) private var dismiss
     
-    let difficulty: MinesweeperDifficulty
-    @StateObject var viewModel: MinesweeperViewModel
+    let difficulty: Difficulty
+    @StateObject var viewModel: GameViewModel
     
     @State private var showConfetti = false
     @State private var showShareSheet = false
     
-    init(difficulty: MinesweeperDifficulty) {
+    init(difficulty: Difficulty) {
         self.difficulty = difficulty
-        _viewModel = StateObject(wrappedValue: MinesweeperViewModel(difficulty: difficulty))
+        _viewModel = StateObject(wrappedValue: GameViewModel(difficulty: difficulty))
     }
     
     var body: some View {
@@ -143,7 +143,7 @@ struct MinesweeperGameView: View {
                             HStack(spacing: 0) {
                                 ForEach(0..<colCount, id: \.self) { col in
                                     if let cell = viewModel.grid[safe: row]?[safe: col] {
-                                        MinesweeperCellView(cell: cell) {
+                                        CellView(cell: cell) {
                                             viewModel.revealCell(row: row, col: col)
                                         } onLongPress: {
                                             viewModel.toggleFlag(row: row, col: col)
