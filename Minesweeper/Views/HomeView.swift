@@ -16,11 +16,13 @@ struct HomeView: View {
             ZStack {
                 Color.background1.ignoresSafeArea()
                 
-                VStack {
+                VStack(spacing: 20) {
                     leaderboardButton
+                    Spacer()
                     logoView
                     titleText
                     difficultyOptions
+                    Spacer()
                     Spacer()
                 }
             }

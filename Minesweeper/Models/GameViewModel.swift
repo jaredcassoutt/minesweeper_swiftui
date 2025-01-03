@@ -26,6 +26,7 @@ class GameViewModel: ObservableObject {
     private var timer: AnyCancellable?
     private var startTime: Date?
     private var isTimerRunning = false
+    @Published var elapsedTime: Int = 0
     
     // Board dimensions
     var rows: Int
@@ -40,33 +41,45 @@ class GameViewModel: ObservableObject {
     }
     
     func newGame(difficulty: Difficulty) {
-        // Stop any existing timer
         stopTimer()
-        
         self.currentDifficulty = difficulty
-        
-        // Update board size & mine count for the new difficulty
         let size = difficulty.gridSize
         self.rows = size.rows
         self.columns = size.columns
         self.totalMines = size.mines
-        
-        // Create fresh grid
         grid = createEmptyGrid(rows: rows, columns: columns)
-        
-        // Place mines
         placeMines(count: totalMines)
-        
-        // Calculate adjacent mines
         calculateAdjacentMines()
-        
         isGameOver = false
         isVictory = false
         revealedCount = 0
         flaggedMineCount = 0
-        
-        // Start timer
         startTimer()
+    }
+    
+    // Check victory using counters and report score
+    private func checkVictory() {
+        let totalNonMines = rows * columns - totalMines
+        if revealedCount == totalNonMines {
+            isGameOver = true
+            isVictory = true
+            stopTimer()
+            revealAllMines()
+            reportScores()
+        }
+    }
+    
+    private func reportScores() {
+        let leaderboardID: String
+        switch currentDifficulty {
+        case .easy:
+            leaderboardID = ""
+        case .medium:
+            leaderboardID = ""
+        case .hard:
+            leaderboardID = ""
+        }
+        GameCenterHelper.shared.reportScore(elapsedTime, forLeaderboardID: leaderboardID)
     }
     
     // MARK: - Flag Mode
@@ -175,17 +188,6 @@ class GameViewModel: ObservableObject {
         }
         
         checkVictory()
-    }
-    
-    // Now check victory using counters
-    private func checkVictory() {
-        let totalNonMines = rows * columns - totalMines
-        if revealedCount == totalNonMines {
-            isGameOver = true
-            isVictory = true
-            stopTimer()
-            revealAllMines()
-        }
     }
     
     private func revealAllMines() {
