@@ -26,57 +26,34 @@ struct GameOverView: View {
             
             if isVictory {
                 Button(action: {
-                    onNewGame()
-                }) {
-                    Text("New Game")
-                        .font(.title2)
-                        .frame(width: 200, height: 50)
-                        .background(Color.blue.opacity(0.7))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                .padding([.top, .horizontal])
-                
-                Button(action: {
-                    onRestart()
-                }) {
-                    Text("Restart")
-                        .font(.title2)
-                        .frame(width: 200, height: 50)
-                        .background(Color.green.opacity(0.7))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                .padding(.horizontal)
-                
-                Button(action: {
                     onShare()
                 }) {
-                    Text("Share Results")
+                    Text("Share Result")
                         .font(.title2)
                         .frame(width: 200, height: 50)
                         .background(Color.purple.opacity(0.7))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
-                .padding([.horizontal, .bottom])
+                .padding([.top, .horizontal])
             } else {
                 Button(action: {
-                    onNewGame()
+                    onContinue()
                 }) {
-                    Text("New Game")
+                    Text("View Result")
                         .font(.title2)
                         .frame(width: 200, height: 50)
-                        .background(Color.blue.opacity(0.7))
+                        .background(Color.purple.opacity(0.7))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
                 .padding([.top, .horizontal])
-                
+            }
+            
                 Button(action: {
-                    onRestart()
+                    onNewGame()
                 }) {
-                    Text("Restart")
+                    Text("New Game")
                         .font(.title2)
                         .frame(width: 200, height: 50)
                         .background(Color.green.opacity(0.7))
@@ -84,8 +61,18 @@ struct GameOverView: View {
                         .cornerRadius(10)
                 }
                 .padding(.horizontal)
-            }
-            
+                
+                Button(action: {
+                    onRestart()
+                }) {
+                    Text("Restart")
+                        .font(.title2)
+                        .frame(width: 200, height: 50)
+                        .background(Color.blue.opacity(0.7))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding([.horizontal, .bottom])
         }
         .padding()
         .background(.background1)
