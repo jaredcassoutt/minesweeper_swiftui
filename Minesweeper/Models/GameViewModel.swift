@@ -180,16 +180,7 @@ class GameViewModel: ObservableObject {
     // Now check victory using counters
     private func checkVictory() {
         let totalNonMines = rows * columns - totalMines
-        
-        // #1) If all safe cells are revealed, you win
         if revealedCount == totalNonMines {
-            isGameOver = true
-            isVictory = true
-            stopTimer()
-            revealAllMines()
-        }
-        // #2) Or if all mines are flagged AND no safe cells are flagged
-        else if flaggedMineCount == totalMines && flaggedNonMineCount == 0 {
             isGameOver = true
             isVictory = true
             stopTimer()
