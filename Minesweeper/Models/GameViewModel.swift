@@ -86,11 +86,11 @@ class GameViewModel: ObservableObject {
         let leaderboardID: String
         switch currentDifficulty {
         case .easy:
-            leaderboardID = "com.haplo.minesweeper.leaderboard.easy"
+            leaderboardID = ""
         case .medium:
-            leaderboardID = "com.haplo.minesweeper.leaderboard.medium"
+            leaderboardID = ""
         case .hard:
-            leaderboardID = "com.haplo.minesweeper.leaderboard.hard"
+            leaderboardID = ""
         }
         let totalScoreTime = elapsedTime + hintPenaltyTally
         GameCenterHelper.shared.reportScore(totalScoreTime, forLeaderboardID: leaderboardID)
