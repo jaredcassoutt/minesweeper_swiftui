@@ -63,7 +63,10 @@ struct GameView: View {
     private var timerText: some View {
         Text(viewModel.timerString)
             .font(.subheadline)
+            .bold(viewModel.isTimerHighlighted)
+            .foregroundColor(viewModel.isTimerHighlighted ? .red : .text1)
             .padding(.bottom)
+            .animation(.easeInOut(duration: 0.5), value: viewModel.isTimerHighlighted)
     }
     
     private var controlButtons: some View {

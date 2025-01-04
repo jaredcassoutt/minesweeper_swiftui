@@ -12,6 +12,7 @@ class GameViewModel: ObservableObject {
     @Published var grid: [[MinesweeperCell]] = []
     @Published var isGameOver: Bool = false
     @Published var isVictory: Bool = false
+    @Published var isTimerHighlighted: Bool = false
     
     private var flaggedNonMineCount = 0
     private var revealedCount = 0
@@ -27,6 +28,10 @@ class GameViewModel: ObservableObject {
     private var startTime: Date?
     private var isTimerRunning = false
     @Published var elapsedTime: Int = 0
+    
+    // Hint penalty tally
+    private var hintPenaltyTally: Int = 0
+    private let hintPenalty: Int = 30
     
     // Board dimensions
     var rows: Int
@@ -54,10 +59,18 @@ class GameViewModel: ObservableObject {
         isVictory = false
         revealedCount = 0
         flaggedMineCount = 0
+        hintPenaltyTally = 0
         startTimer()
     }
     
     // Check victory using counters and report score
+    private func highlightTimer() {
+        isTimerHighlighted = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            self.isTimerHighlighted = false
+        }
+    }
+    
     private func checkVictory() {
         let totalNonMines = rows * columns - totalMines
         if revealedCount == totalNonMines {
@@ -79,7 +92,8 @@ class GameViewModel: ObservableObject {
         case .hard:
             leaderboardID = ""
         }
-        GameCenterHelper.shared.reportScore(elapsedTime, forLeaderboardID: leaderboardID)
+        let totalScoreTime = elapsedTime + hintPenaltyTally
+        GameCenterHelper.shared.reportScore(totalScoreTime, forLeaderboardID: leaderboardID)
     }
     
     // MARK: - Flag Mode
@@ -111,7 +125,11 @@ class GameViewModel: ObservableObject {
         let (row, col) = candidateCells[randomIndex]
         grid[row][col].isFlagged = true
         
-        // You might check for victory after the hint
+        // Add hint penalty
+        hintPenaltyTally += hintPenalty
+        highlightTimer()
+        
+        // Check for victory
         checkVictory()
     }
     
@@ -272,7 +290,6 @@ class GameViewModel: ObservableObject {
     private func startTimer() {
         startTime = Date()
         isTimerRunning = true
-        
         timer = Timer.publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
@@ -284,14 +301,18 @@ class GameViewModel: ObservableObject {
         isTimerRunning = false
         timer?.cancel()
         timer = nil
+        if let startTime = startTime {
+            elapsedTime = Int(Date().timeIntervalSince(startTime))
+        }
     }
     
     private func updateTimer() {
         guard isTimerRunning, let startTime = startTime else { return }
-        
-        let elapsed = Int(Date().timeIntervalSince(startTime))
-        let minutes = elapsed / 60
-        let seconds = elapsed % 60
+        let actualElapsedTime = Int(Date().timeIntervalSince(startTime))
+        elapsedTime = actualElapsedTime
+        let totalElapsedTime = actualElapsedTime + hintPenaltyTally
+        let minutes = totalElapsedTime / 60
+        let seconds = totalElapsedTime % 60
         timerString = String(format: "%02d:%02d", minutes, seconds)
     }
 }
