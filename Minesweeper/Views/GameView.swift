@@ -42,7 +42,7 @@ struct GameView: View {
         }
         .sheet(isPresented: $showShareSheet) {
             ActivityViewController(activityItems: [
-                "I just completed a Minesweeper on \(difficulty.rawValue) difficulty in only \(viewModel.timerString)! Try to beat my time!"
+                "I just completed a Minesweeper on \(difficulty.rawValue) difficulty in only \(viewModel.timerString)! Try to beat my time! https://apps.apple.com/us/app/minesweeper-fun-brain-workout/id6740149301"
             ])
         }
         .onReceive(viewModel.$isGameOver) { isCompleted in

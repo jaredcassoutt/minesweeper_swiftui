@@ -17,7 +17,7 @@ enum Difficulty: String, CaseIterable {
         case .easy:
             return (rows: 9, columns: 9, mines: 10)
         case .medium:
-            return (rows: 16, columns: 16, mines: 40)
+            return (rows: 18, columns: 12, mines: 30)
         case .hard:
             return (rows: 25, columns: 16, mines: 50)
         }
