@@ -19,7 +19,7 @@ A full-featured Minesweeper game built with SwiftUI, offering multiple difficult
 
 2. Open the Project in Xcode:
     - Open Minesweeper.xcodeproj in Xcode.
-    - Make sure you’re running Xcode 12 or later.
+    - Make sure you’re running Xcode 16 or later.
 3. Run the App:
     - Build and run on the simulator or an actual device.
     - Select a difficulty level and start solving puzzles!
